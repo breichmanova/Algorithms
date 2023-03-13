@@ -137,18 +137,19 @@ def wqu_demo(pathcompression: bool):
 class Percolation:
     def __init__(self, n):
         self.n = n
-        self.list = [a for a in range(n*n + 2)]  # list of roots with two virtual sites - top (0) and bottom (n*n + 1)
-        self.weights = [1] * (n*n + 2)
+        self.n2 = n * n
+        self.list = [a for a in range(self.n2 + 2)]  # list of roots with two virtual sites - top (0) and bottom (n*n + 1)
+        self.weights = [1] * (self.n2 + 1)
 
         # open status of a site
-        self.open = [0] * (self.n * self.n + 1)
+        self.open = [0] * (self.n2 + 1)
         self.open[0] = 1
-        self.open[n*n + 1] = 1
+        self.open[self.n2 + 1] = 1
 
         # connecting top and bottom row to virtual sites
         for i in range(1, self.n + 1):
             self.list[i] = 0
-            self.list[-i] = self.n * self.n + 1
+            self.list[-i] = self.n2 + 1
 
     def _root(self, i: int):
         while i != self.list[i]:
@@ -180,19 +181,19 @@ class Percolation:
     def open(self, row, col):
         self.open[((row - 1) * self.n + col)] = 1
         if row != 1:  # set connection to site on top
-            self._union(((row - 1) * self.n + col), ((row - 1) * self.n - 1 + col))
+            self._union(row - 1, col, row - 2, col)
         if col != 1:  # set connection to site on left
-            self._union(((row - 1) * self.n + col), ((row - 1) * self.n + col - 1))
+            self._union(row - 1, col, row - 1, col - 1)
         if row != self.n:  # set connection to site bellow
-            self._union(((row - 1) * self.n + col), ((row - 1) * self.n + 1 + col))
+            self._union(row - 1, col, row, col)
         if col != self.n:  # set connection to site on right
-            self._union(((row - 1) * self.n + col), ((row - 1) * self.n + col + 1))
+            self._union(row - 1, col, row - 1, col + 1)
 
     def is_full(self, row, col):
         pass
 
     def percolates(self):
-        pass
+        return self._root(self.n2 + 1) == 0
 
 
 # Press the green button in the gutter to run the script.
