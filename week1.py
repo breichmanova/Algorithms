@@ -139,15 +139,15 @@ class Percolation:
         self.n = n
         self.n2 = n * n
         self.list = [a for a in range(self.n2 + 2)]  # list of roots with two virtual sites - top (0) and bottom (n*n + 1)
-        self.weights = [1] * (self.n2 + 1)
+        self.weights = [1] * (self.n2 + 2)
 
         # open status of a site
-        self.open = [0] * (self.n2 + 1)
+        self.open = [0] * (self.n2 + 2)
         self.open[0] = 1
         self.open[self.n2 + 1] = 1
 
         # connecting top and bottom row to virtual sites
-        for i in range(1, self.n + 1):
+        for i in range(1, self.n + 2):
             self.list[i] = 0
             self.list[-i] = self.n2 + 1
 
@@ -161,7 +161,7 @@ class Percolation:
         return self.open((row - 1) * self.n + col) == 1
 
     def _union(self, a_row: int, a_col:int, b_row: int, b_col: int):
-        if self.is_open(b_row, b_col):
+        if self.is_open(b_row, b_col) and self.is_open(a_row, a_col):
             a = ((a_row - 1) * self.n + a_col)
             b = ((b_row - 1) * self.n + b_col)
             aid = self._root(a)
@@ -179,6 +179,9 @@ class Percolation:
         return self._root(a) == self._root(b)
 
     def open(self, row, col):
+        '''
+        Opens a site at the location row x col. It creates a connection with the neighbouring sites.
+        '''
         self.open[((row - 1) * self.n + col)] = 1
         if row != 1:  # set connection to site on top
             self._union(row - 1, col, row - 2, col)
@@ -190,26 +193,46 @@ class Percolation:
             self._union(row - 1, col, row - 1, col + 1)
 
     def is_full(self, row, col):
-        pass
+        '''
+        The site is full if it is connected to the top row (virtual top site), i.e. its root is 0.
+        '''
+        return self._root((row - 1) * self.n + col) == 0
 
     def percolates(self):
-        return self._root(self.n2 + 1) == 0
+        '''
+        If there is a full site in the bottom row (virtual bottom site), the system percolates.
+        '''
+        return self.is_full(self.n + 1, 1)
+        
+    def show(self):
+        print('Roots:')
+        for i in range(1,self.n + 1):
+            print(f'{self.list[i:i + self.n]}')
+        print('Open sites: ')
+        for i in range(1,self.n + 1):
+            print(f'{self.open[i:i + self.n]}')
 
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     # Demo of Quick Find
-    qf_demo()
-    print('')
+    #qf_demo()
+    #print('')
 
     #Demo of Quick Union
-    qu_demo()
-    print('')
+    #qu_demo()
+    #print('')
 
     #Demo of Weighted Quick Union
-    wqu_demo(False)
-    print('')
+    #wqu_demo(False)
+    #print('')
 
     #demo of Weithed Quick Union with path Compression
-    wqu_demo(True)
+    #wqu_demo(True)
 
+    p = Percolation(5)
+    for i,j in [[1,2],[1,3],[1,5],[2,3],[2,4],[2,5],[3,1],[3,2],[3,4],[3,5],[4,1],[4,5],[5,2],[5,3],[5,4],[5,5]]:
+        print(f'{i} x {j}')
+        #p.open(i,j)
+    p.show()
+    print(p.percolates())
