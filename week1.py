@@ -147,9 +147,9 @@ class Percolation:
         self.open[self.n2 + 1] = 1
 
         # connecting top and bottom row to virtual sites
-        for i in range(1, self.n + 2):
-            self.list[i] = 0
-            self.list[-i] = self.n2 + 1
+#        for i in range(1, self.n + 2):
+#            self.list[i] = 0
+#            self.list[-i] = self.n2 + 1
 
     def _root(self, i: int):
         while i != self.list[i]:
@@ -158,7 +158,7 @@ class Percolation:
         return i
 
     def is_open(self, row, col):
-        return self.open((row - 1) * self.n + col) == 1
+        return self.open[(row - 1) * self.n + col] == 1
 
     def _union(self, a_row: int, a_col:int, b_row: int, b_col: int):
         if self.is_open(b_row, b_col) and self.is_open(a_row, a_col):
@@ -178,7 +178,7 @@ class Percolation:
     def _connected(self, a: int, b: int):
         return self._root(a) == self._root(b)
 
-    def open(self, row, col):
+    def open_site(self, row, col):
         '''
         Opens a site at the location row x col. It creates a connection with the neighbouring sites.
         '''
@@ -207,10 +207,10 @@ class Percolation:
     def show(self):
         print('Roots:')
         for i in range(1,self.n + 1):
-            print(f'{self.list[i:i + self.n]}')
+            print(f'{self.list[self.n*(i - 1) + 1 : self.n*i + 1]}')
         print('Open sites: ')
         for i in range(1,self.n + 1):
-            print(f'{self.open[i:i + self.n]}')
+            print(f'{self.open[self.n*(i - 1) + 1 : self.n*i + 1]}')
 
 
 # Press the green button in the gutter to run the script.
@@ -230,9 +230,11 @@ if __name__ == '__main__':
     #demo of Weithed Quick Union with path Compression
     #wqu_demo(True)
 
+    # Percolation example for 5x5
     p = Percolation(5)
+    print(p.list[26])
     for i,j in [[1,2],[1,3],[1,5],[2,3],[2,4],[2,5],[3,1],[3,2],[3,4],[3,5],[4,1],[4,5],[5,2],[5,3],[5,4],[5,5]]:
-        print(f'{i} x {j}')
-        #p.open(i,j)
+        p.open_site(i,j)
     p.show()
+    print(p.list[26])
     print(p.percolates())
